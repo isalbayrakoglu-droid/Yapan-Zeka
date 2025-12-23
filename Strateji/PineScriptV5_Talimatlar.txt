@@ -1,0 +1,155 @@
+PINE SCRIPT v5 – BAĞLAYICI YAZIM KURALLARI
+(Parser-Safe · Derlenebilir · Tekrar Üretilebilir)
+
+--------------------------------------------------
+0) ALTIN PRENSİP
+--------------------------------------------------
+- Derlenmeyen kod = YANLIŞ
+- Parser’ın sevmediği her yapı YASAK
+- “Mantık doğru ama Pine hata veriyor” = GEÇERSİZ
+- Bu dosya ihlal edilirse çıktı GEÇERSİZ PINE KODU sayılır
+
+--------------------------------------------------
+1) SÜRÜM & HEADER KURALI
+--------------------------------------------------
+- //@version=5 TEK SATIR olmalıdır
+- strategy() veya indicator() TEK SATIR olmalıdır
+- Multi-line header KESİN YASAKTIR
+
+--------------------------------------------------
+2) INPUT & CONST YAZIM KURALI
+--------------------------------------------------
+YASAK:
+- input.* içinde series değer
+- input.* içinde runtime hesap
+- input.int değerini doğrudan ta.* fonksiyonuna vermek
+- input.string(defval=syminfo.ticker)
+
+ZORUNLU:
+- Sayısal parametreler CONST olarak tanımlanır
+- ta.* fonksiyonlarına SADECE simple int (const) verilir
+
+--------------------------------------------------
+3) FONKSİYON & API KURALI
+--------------------------------------------------
+YASAK:
+- Pine Script’te olmayan fonksiyonlar (örn: ta.avg())
+- “Başka dilde var, Pine’da da vardır” varsayımı
+
+ZORUNLU:
+- Ortalama vb. işlemler manuel yazılır
+  (x + y) / 2.0
+
+--------------------------------------------------
+3A) TUPLE / ÇOKLU DÖNÜŞ KURALI (KRİTİK)
+--------------------------------------------------
+YASAK:
+- Fonksiyondan dönen tuple’ın bir değişkene atanması
+  pm = myFunc()
+
+- Tuple destructuring kullanımı
+  [a, b] = myFunc()
+  [float a, float b] = myFunc()
+
+ZORUNLU:
+- Fonksiyonlar ya TEK değer döndürür
+- Ya da çoklu değer yerine hesap inline yazılır
+
+NOT:
+- Pine Script’te tuple yalnızca return için vardır
+- Tuple değişkene atanamaz, parçalanamaz
+
+--------------------------------------------------
+4) NA KULLANIM KURALI
+--------------------------------------------------
+YASAK:
+- x == na
+- x != na
+
+DOĞRU:
+- na(x)
+- not na(x)
+
+--------------------------------------------------
+5) BOOLEAN & PARSER TUZAKLARI
+--------------------------------------------------
+YASAK:
+- Çok satırlı boolean ifadeler
+- Boolean ifadelerde satır sonu + parantez kombinasyonu
+- Satır sonunda and / or bırakmak
+- = sonrası satırı boş bırakmak
+- Sadece ( ile başlayan devam satırı
+
+--------------------------------------------------
+6) DEĞİŞKEN TANIMI & İSİM ÇAKIŞMASI
+--------------------------------------------------
+- Aynı isimli değişken birden fazla kez tanımlanamaz
+- const, input, var isimleri tekrar edemez
+- Aynı script içinde iki kez atama DERLEME HATASIDIR
+
+--------------------------------------------------
+7) VAR KULLANIMI
+--------------------------------------------------
+- Kalıcı değişkenler SADECE var ile tanımlanır
+- var ile tanımlanan değişken:
+  - tekrar = ile tanımlanamaz
+  - sadece := ile güncellenir
+
+--------------------------------------------------
+8) BARSTATE KULLANIMI
+--------------------------------------------------
+- barstate.isconfirmed sadece koşul içinde kullanılır
+- Fonksiyon argümanı olarak kullanılamaz
+
+--------------------------------------------------
+9) REQUEST.SECURITY YAZIM KURALI
+--------------------------------------------------
+YASAK:
+- Varsayılan lookahead
+- lookahead_on
+
+ZORUNLU:
+request.security(
+    symbol,
+    timeframe,
+    expression,
+    barmerge.gaps_off,
+    barmerge.lookahead_off
+)
+
+--------------------------------------------------
+10) ALERTCONDITION YAZIM KURALI
+--------------------------------------------------
+- alertcondition message SADECE const string olabilir
+- Runtime string birleştirme YASAKTIR
+
+--------------------------------------------------
+11) STRATEGY API SINIRLARI
+--------------------------------------------------
+- strategy.exit() yazım standardı dışıdır
+- strategy.entry() ve strategy.close() tek satır olmalıdır
+
+--------------------------------------------------
+12) DERLEME ÖNCESİ CHECKLIST
+--------------------------------------------------
+- Header tek satır mı
+- ta.* simple int mi
+- Tuple / destructuring var mı
+- Çok satırlı boolean var mı
+- Aynı isimli değişken var mı
+- alertcondition message const mu
+- request.security lookahead_off mu
+
+--------------------------------------------------
+13) SADELİK
+--------------------------------------------------
+- Aksi belirtilmedikçe bire-bir dönüşüm yap
+- Orijinalinde yoksa EMA, RSI vb. ekleme
+- Geliştirme önerileri ayrı verilir
+
+
+--------------------------------------------------
+BAĞLAYICI HÜKÜM
+--------------------------------------------------
+Bu dosya SADECE Pine Script yazım kurallarını kapsar.
+Herhangi bir madde ihlal edilirse çıktı GEÇERSİZ PINE KODU sayılır.

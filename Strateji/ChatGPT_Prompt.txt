@@ -1,0 +1,3 @@
+Bu projede kullanılan ‘PINE SCRIPT v5 – BAĞLAYICI YAZIM KURALLARI’ metni %100 geçerlidir ve bu bağlayıcıdır; verilen herhangi bir TradingView göstergesini, BTCUSDT sembolü ve 4 saat zaman dilimi varsayımıyla, bu kurallara %100 uyan şekilde (parser-safe, repaint-free, bar kapanışı onaylı barstate.isconfirmed, strategy()/indicator() tek satır, multi-line header yasak, ta.* yalnızca const int, alertcondition mesajı yalnız const string, request.security yalnız barmerge.gaps_off + barmerge.lookahead_off, var/:= kuralları), tek dosyada DERLENEN, BOT-ready ve tekrar üretilebilir bir Pine Script v5 STRATEJİYE bire-bir dönüştür; derlenmeyen veya kural ihlali içeren hiçbir kod üretme.
+Başlangıç tarihi 1 Ocak 2023 olsun.
+Aşağıdaki göstergeden strateji üret:
