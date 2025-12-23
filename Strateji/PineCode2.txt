@@ -1,0 +1,44 @@
+//@version=5
+strategy("WT LazyBear → LONG-ONLY PROD v2 (BTCUSDT 4H)", overlay=false, pyramiding=0, default_qty_type=strategy.percent_of_equity, default_qty_value=100, commission_type=strategy.commission.percent, commission_value=0.1)
+
+// ===================== CONST PARAMETRELER =====================
+const int N1 = 10
+const int N2 = 21
+const int WT_SMA = 4
+
+const float OB2 = 53.0
+const float OS2 = -53.0
+
+const int START_TS = 1672531200000  // 2023-01-01 00:00:00 UTC
+
+// ===================== ZAMAN FİLTRESİ =====================
+inDate = time >= START_TS
+
+// ===================== WAVETREND (LazyBear) =====================
+ap = (high + low + close) / 3.0
+esa = ta.ema(ap, N1)
+d = ta.ema(math.abs(ap - esa), N1)
+ci = (ap - esa) / (0.015 * d)
+wt1 = ta.ema(ci, N2)
+wt2 = ta.sma(wt1, WT_SMA)
+
+// ===================== SİNYALLER (LONG ONLY) =====================
+// Giriş: wt1, wt2'yi yukarı keser + oversold bölgesinde
+longCond = inDate and barstate.isconfirmed and wt1 > wt2 and wt1 < OS2
+
+// Çıkış: wt1, wt2'yi aşağı keser + overbought bölgesinde
+exitCond = inDate and barstate.isconfirmed and wt1 < wt2 and wt1 > OB2
+
+// ===================== EMİRLER =====================
+if longCond and strategy.position_size <= 0
+    strategy.entry("LONG", strategy.long)
+
+if exitCond and strategy.position_size > 0
+    strategy.close("LONG")
+
+// ===================== ALERTLER (CONST STRING) =====================
+const string AL_LONG = "WT LONG ONLY: ENTRY"
+const string AL_EXIT = "WT LONG ONLY: EXIT"
+
+alertcondition(longCond, title="WT LONG ENTRY", message=AL_LONG)
+alertcondition(exitCond, title="WT LONG EXIT", message=AL_EXIT)
